@@ -1,6 +1,7 @@
 <?php
 
-	require '../../config.php';
+	@include '../../config.php';
+    @include '../config.php';
 
 	class Model
 	{
@@ -58,19 +59,37 @@
                 die(mysql_error());
             }
 		}
-		
+
+        public function count($values)
+        {
+            $table = $this->table;
+            $structure = '';
+            foreach($values as $key=>$value)
+            {
+                $structure .= $key.'='."'$value' AND";
+            }
+            rtrim($structure," AND");
+            $query = "SELECT * FROM $table WHERE $structure";
+            if($query_run = mysql_query($query))
+            {
+                return mysql_num_rows($query_run);
+            }else{
+                die(mysql_error());
+            }
+        }
+
 		public function all()
 		{
             $table = $this->table;
             $query = "SELECT * FROM $table";
             if($query_run = mysql_query($query))
             {
-                if($res=mysql_num_rows(mysql_query($query)))
+                if($res=mysql_num_rows($query_run))
                 {
                     return mysql_fetch_assoc($query_run);
                 }
             }else{
-                die('mysql_error()');
+                die(mysql_error());
             }
 		}
 		
@@ -108,13 +127,7 @@
 				die(mysql_error());
 			}
 		}
-        /*
-        public function update($values)
-        {
-            $table = $this->table;
-            $query = "UPDATE $table SET $structure";
-        }
-        */
+
 	}
 
 ?>
